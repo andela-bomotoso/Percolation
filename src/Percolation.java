@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private static final int OPENED = 1;
     private static final int CLOSED = 0;
+    private boolean bottomFull;
     private final int n;
     private int opensites;
     private int[][] site;
@@ -14,6 +15,7 @@ public class Percolation {
         validate(n);
         this.n = n;
         site = new int[n][n];
+        bottomFull = false;
         opensites = 0;
         for (int i = 0; i < n; i++)
 
@@ -33,41 +35,25 @@ public class Percolation {
             col = col - 1;
             site[row][col] = OPENED;
             opensites++;
-            if (isFirstRow(row)) {
-                // Connect to imaginary top site
-                weightedQuickUnionUF.union(virtualTopsite, getSiteId(row, col));
-            }
-            if (isLastRow(row)) {
-                // connect to imaginary bottom site
-                weightedQuickUnionUF.union(virtualBottomsite, getSiteId(row, col));
-            }
-            // check if left side of the curent site is opened and perform a connection
-            if (!isFirstCol(col) && (site[row][col - 1]) == OPENED) {
-                weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col - 1));
-            }
-            // check if right side of the curent site is opened and perform a connection
-            if (!isLastCol(col) && (site[row][col + 1]) == OPENED) {
-                weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col + 1));
-            }
-            // check if top side of the curent site is opened and perform a connection
-            if (!isFirstRow(row) && (site[row - 1][col]) == OPENED) {
-                weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row - 1, col));
-            }
-            // check if bottom side of the curent site is opened and perform a connection
-            if (!isLastRow(row) && (site[row + 1][col]) == OPENED) {
-                weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row + 1, col));
-            }
+            connectNeigbouringSites(row, col);
         }
     }
 
     public boolean isOpen(int row, int col) {
         validate(row, col);
-        return site[row - 1][col - 1] == 1;
+        return site[row - 1][col - 1] == OPENED;
     }
 
     public boolean isFull(int row, int col) {
+        bottomFull = false;
         validate(row, col);
-        return (isOpen(row, col) && weightedQuickUnionUF.connected(getSiteId(row, col), 0));
+        if (isOpen(row, col)) {
+            row = row - 1;
+            col = col - 1;
+            connectNeigbouringSites(row, col);
+            bottomFull = isLastRow(row) && weightedQuickUnionUF.connected(getSiteId(row, col), 0);
+        }
+        return bottomFull;
     }
 
     public int numberOfOpenSites() {
@@ -113,6 +99,34 @@ public class Percolation {
 
     private boolean isLastRow(int row) {
         return row == n - 1;
+    }
+
+    private void connectNeigbouringSites(int row, int col) {
+        if (isFirstRow(row)) {
+            // Connect to imaginary top site
+            weightedQuickUnionUF.union(virtualTopsite, getSiteId(row, col));
+        }
+        if (isLastRow(row)) {
+            // connect to imaginary bottom site
+            weightedQuickUnionUF.union(virtualBottomsite, getSiteId(row, col));
+        }
+        // check if left side of the curent site is opened and perform a connection
+        if (!isFirstCol(col) && (site[row][col - 1]) == OPENED) {
+            weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col - 1));
+        }
+        // check if right side of the curent site is opened and perform a connection
+        if (!isLastCol(col) && (site[row][col + 1]) == OPENED) {
+            weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col + 1));
+        }
+        // check if top side of the curent site is opened and perform a connection
+        if (!isFirstRow(row) && (site[row - 1][col]) == OPENED) {
+            weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row - 1, col));
+        }
+        // check if bottom side of the curent site is opened and perform a connection
+        if (!isLastRow(row) && (site[row + 1][col]) == OPENED) {
+            weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row + 1, col));
+        }
+
     }
 
 }
