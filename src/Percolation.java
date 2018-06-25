@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private static final int OPENED = 1;
     private static final int CLOSED = 0;
-    private boolean bottomFull;
+    private boolean isFull;
     private final int n;
     private int opensites;
     private int[][] site;
@@ -15,7 +15,7 @@ public class Percolation {
         validate(n);
         this.n = n;
         site = new int[n][n];
-        bottomFull = false;
+        isFull = false;
         opensites = 0;
         for (int i = 0; i < n; i++)
 
@@ -45,15 +45,15 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        bottomFull = false;
+        isFull = false;
         validate(row, col);
         if (isOpen(row, col)) {
             row = row - 1;
             col = col - 1;
             connectNeigbouringSites(row, col);
-            bottomFull = isLastRow(row) && weightedQuickUnionUF.connected(getSiteId(row, col), 0);
+            isFull = weightedQuickUnionUF.connected(getSiteId(row, col), 0);
         }
-        return bottomFull;
+        return isFull;
     }
 
     public int numberOfOpenSites() {
@@ -130,4 +130,3 @@ public class Percolation {
     }
 
 }
-

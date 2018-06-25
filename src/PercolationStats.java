@@ -13,13 +13,11 @@ public class PercolationStats {
         this.thresholds = new double[trials];
         for (int i = 0; i < trials; i++) {
             Percolation percolation = new Percolation(n);
-            // System.out.print("Test " + (i + 1));
             while (!percolation.percolates()) {
                 int randomRow = StdRandom.uniform(n) + 1;
                 int randomCol = StdRandom.uniform(n) + 1;
                 percolation.open(randomRow, randomCol);
             }
-            // System.out.print(": Open Sites " + percolation.numberOfOpenSites() + "\n");
             thresholds[i] = ((double) percolation.numberOfOpenSites()) / (n * n);
         }
         CONFIDENCE_STDDEV = CONFIDENCE_95 * stddev();
