@@ -1,20 +1,20 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
-    private static final int OPENED = 1;
-    private static final int CLOSED = 0;
+    private static final boolean OPENED = true;
+    private static final boolean CLOSED = false;
     private boolean isFull;
     private final int n;
     private int opensites;
-    private int[][] site;
+    private boolean[][] site;
     private final int virtualTopsite;
     private final int virtualBottomsite;
     private final WeightedQuickUnionUF weightedQuickUnionUF;
-
+    private final WeightedQuickUnionUF weightedQuickUnionUF1;
     public Percolation(int n) {
         validate(n);
         this.n = n;
-        site = new int[n][n];
+        site = new boolean[n][n];
         isFull = false;
         opensites = 0;
         for (int i = 0; i < n; i++)
@@ -23,6 +23,7 @@ public class Percolation {
                 site[i][j] = CLOSED;
 
         this.weightedQuickUnionUF = new WeightedQuickUnionUF((n * n) + 2);
+        this.weightedQuickUnionUF1 = new WeightedQuickUnionUF((n * n) + 1);
         virtualTopsite = 0;
         virtualBottomsite = n * n + 1;
     }
@@ -51,7 +52,7 @@ public class Percolation {
             row = row - 1;
             col = col - 1;
             connectNeigbouringSites(row, col);
-            isFull = weightedQuickUnionUF.connected(getSiteId(row, col), 0);
+            isFull = weightedQuickUnionUF1.connected(getSiteId(row, col), 0);
         }
         return isFull;
     }
@@ -105,6 +106,7 @@ public class Percolation {
         if (isFirstRow(row)) {
             // Connect to imaginary top site
             weightedQuickUnionUF.union(virtualTopsite, getSiteId(row, col));
+            weightedQuickUnionUF1.union(virtualTopsite, getSiteId(row, col));
         }
         if (isLastRow(row)) {
             // connect to imaginary bottom site
@@ -113,18 +115,22 @@ public class Percolation {
         // check if left side of the curent site is opened and perform a connection
         if (!isFirstCol(col) && (site[row][col - 1]) == OPENED) {
             weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col - 1));
+            weightedQuickUnionUF1.union(getSiteId(row, col), getSiteId(row, col - 1));
         }
         // check if right side of the curent site is opened and perform a connection
         if (!isLastCol(col) && (site[row][col + 1]) == OPENED) {
             weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row, col + 1));
+            weightedQuickUnionUF1.union(getSiteId(row, col), getSiteId(row, col + 1));
         }
         // check if top side of the curent site is opened and perform a connection
         if (!isFirstRow(row) && (site[row - 1][col]) == OPENED) {
             weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row - 1, col));
+            weightedQuickUnionUF1.union(getSiteId(row, col), getSiteId(row - 1, col));
         }
         // check if bottom side of the curent site is opened and perform a connection
         if (!isLastRow(row) && (site[row + 1][col]) == OPENED) {
             weightedQuickUnionUF.union(getSiteId(row, col), getSiteId(row + 1, col));
+            weightedQuickUnionUF1.union(getSiteId(row, col), getSiteId(row + 1, col));
         }
 
     }
