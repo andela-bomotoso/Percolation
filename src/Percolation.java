@@ -51,7 +51,6 @@ public class Percolation {
         if (isOpen(row, col)) {
             row = row - 1;
             col = col - 1;
-            connectNeigbouringSites(row, col);
             isFull = weightedQuickUnionUF1.connected(getSiteId(row, col), 0);
         }
         return isFull;
