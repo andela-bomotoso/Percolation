@@ -1,3 +1,5 @@
+PERCOLATION
+
 This is a solution to the Week One Assignment (Percolation) given on Coursera Algorithms course.
 
 The solution provided here had a score of 100% with the following break-down
